@@ -1,0 +1,12 @@
+
+-- Replegar nueva version
+kubectl set image deployment.apps/hermes hermes-demo=alcar21/hermes-demo:2.0.0 --record
+
+-- historial de despliegues
+kubectl rollout history deployment.apps/hermes
+
+-- volver a la versión anterior
+kubectl rollout undo deployment.apps/hermes
+
+-- volver a una versión anterior concreta
+kubectl rollout deployment.apps/hermes --to-revision=2

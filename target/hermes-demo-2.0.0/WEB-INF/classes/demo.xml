@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <package name="demo" namespace="/demo" extends="default">
+
+        <action name="HelloWorld" class="es.indra.kubernetes.demo.HelloWorld">
+            <result>/WEB-INF/jsp/demo/HelloWorld.jsp</result>
+        </action>
+
+        <action name="Login_*" method="{1}" class="es.indra.kubernetes.demo.Login">
+            <result name="input">/WEB-INF/jsp/demo/Login.jsp</result>
+            <result type="redirectAction">Menu</result>
+        </action>
+
+        <action name="*" class="es.indra.kubernetes.demo.ExampleSupport">
+            <result>/WEB-INF/jsp/demo/{1}.jsp</result>
+        </action>
+
+        <!-- Add actions here -->
+    </package>
+</struts>

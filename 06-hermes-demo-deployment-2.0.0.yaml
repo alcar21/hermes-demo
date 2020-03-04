@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes
+  labels:
+    # Etiqueta que identifica el despliegue
+    app: hermes
+spec:
+  # Tiempo para determinar que un despliegue ha fallado
+  progressDeadlineSeconds: 600
+  # Tiempo mínimo en que el contenedor estará listo (sin que falle nada)
+  minReadySeconds: 5
+  replicas: 3
+  # Número máximo de versiones que se guardaran para hacer rollback
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      # Etiquetas para identificar el replicaset
+      app: hermes
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  template:
+    metadata:
+      labels:
+        # Etiquetas para identificar los pods en los objetos tipo servicios
+        app: hermes
+    spec:
+      containers:
+      - name: hermes-demo
+        image: alcar21/hermes-demo:2.0.0
+        imagePullPolicy: Always        
+        ports:
+          - containerPort: 8080
+        volumeMounts:
+          - mountPath: /usr/local/tomcat/webapps/hermes-demo/WEB-INF/classes/global.properties
+            subPath: global.properties
+            name: global-properties
+        #env:
+        #- name: MYSQL_USER
+        #  value: "password"
+        #- name: MYSQL_PASSWORD
+        #  value: "password"
+        #resources:
+        #  requests:
+        #    memory: "64Mi"
+        #    cpu: "200m"
+        #  limits:
+        #    memory: "128Mi"
+        #    cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /hermes-demo/demo/Login.action
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        #livenessProbe:
+        #  tcpSocket:
+        #    port: 8080
+        #  initialDelaySeconds: 30
+        #  periodSeconds: 60
+      volumes:
+        - name: global-properties
+          configMap:
+            name: hermes-config
+            items:
+              - key: global.properties
+                path: global.properties
